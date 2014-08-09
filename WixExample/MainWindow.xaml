@@ -1,0 +1,14 @@
+﻿<Window x:Class="WixExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <StackPanel>
+        <Menu ItemsSource="{Binding MenuItems}" IsMainMenu="True"></Menu>
+        <Grid>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Label Content="Hello, world!" FontSize="26" />
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</Window>

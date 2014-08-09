@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Product tag -->
+	<Product Id="*" Name="WixExampleInstaller" Language="1033" Version="1.0.0.0" Manufacturer="Me" UpgradeCode="2fc524fd-a454-4514-ae47-fd639e5335af">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <!-- For some reason, this isn't the default. Set EmbedCab to true to make sure the .cab file is actually inside the MSI-->
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="WixExampleInstaller" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+    <!-- Install directory -->
+    <!-- TARGETDIR is the only valid root folder in the WiX schema -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+      <!-- Folder defined in the Windows installer documentation http://msdn.microsoft.com/en-us/library/aa370905(v=vs.85).aspx -->
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="WixExampleInstaller">
+          <Directory Id="ExtensionFolder" Name="Extensions" />
+        </Directory>
+			</Directory>
+      <!-- Start Menu Directory -->
+      <Directory Id="ProgramMenuFolder">
+        <!-- Our app's start menu entry -->
+        <Directory Id="WixExampleStartFolder" Name="Wix Example" />
+      </Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents">
+			 <Component Id="ProductComponent" Directory="INSTALLFOLDER">
+         <File Id="WpfExampleExecutable" Source="$(var.WixExample.TargetDir)\WixExample.exe" />
+			 </Component>
+      <Component Id="ModuleLib" Directory="INSTALLFOLDER">
+        <File Source="$(var.ModuleLib.TargetDir)\ModuleLib.dll" />
+      </Component>
+      <?ifdef ModuleA?>
+      <Component Id="ModuleA" Directory="ExtensionFolder">
+        <File Source="$(var.ModuleA.TargetDir)\ModuleA.dll" />
+      </Component>
+      <?endif?>
+      <?ifdef ModuleB?>
+      <Component Id="ModuleB" Directory="ExtensionFolder">
+        <File Source="$(var.ModuleB.TargetDir)\ModuleB.dll" />
+      </Component>
+      <?endif?>
+      <Component Id="StartMenu" Directory="WixExampleStartFolder">
+        <!-- This is our main application short cut. Use the square brackets and a # to pass an ID in-->
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Wix Example"
+                  Description="Hello, world!"
+                  Target="[#WpfExampleExecutable]"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <Shortcut Id="UninstallProduct"
+          Name="Uninstall"
+          Target="[SystemFolder]msiexec.exe"
+          Arguments="/x [ProductCode]"
+          Description="Uninstalls My Application" />
+        <RemoveFolder Id="WixExampleInstaller" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\[ProductName]" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
